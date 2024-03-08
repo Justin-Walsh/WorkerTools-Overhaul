@@ -57,13 +57,13 @@ RUN pwsh -c 'Install-Package -Force Octopus.Client -MaximumVersion "'${Octopus_C
 # https://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up-linux-mac.html
 RUN pwsh -c 'Install-Module -Force -Name AWSPowerShell.NetCore -AllowClobber -Scope AllUsers -MaximumVersion "'${Aws_Powershell_Version}'"'
 
-## Get AZ Powershell core modules
-## https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.6.1
-#RUN pwsh -c 'Install-Module -Force -Name Az -AllowClobber -Scope AllUsers -MaximumVersion "'${Azure_Powershell_Version}'"'
-#
-## Get Helm3
-#RUN wget --quiet -O - https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash -s -- -v ${Helm_Version}
-#
+# Install AZ Powershell core modules
+# https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.6.1
+RUN pwsh -c 'Install-Module -Force -Name Az -AllowClobber -Scope AllUsers -MaximumVersion "'${Azure_Powershell_Version}'"'
+
+# Install Helm3
+RUN wget --quiet -O - https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash -s -- -v ${Helm_Version}
+
 ## Get .NET SDK
 ## https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
 ## https://learn.microsoft.com/en-us/dotnet/core/install/linux-package-mixup
