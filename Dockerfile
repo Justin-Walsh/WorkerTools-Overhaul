@@ -25,13 +25,12 @@ ARG Umoci_Version=0.4.6
 ARG Python2_Version=2.7.18-3
 ARG Argocd_Version=2.8.0
 
-# get `wget` & software-properties-common
-# https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7#ubuntu-1804
+# Install common tools
 RUN apt-get update && \
-    apt-get install -y wget unzip apt-utils curl software-properties-common iputils-ping && \
+    apt-get install -y --no-install-recommends wget unzip apt-utils curl software-properties-common iputils-ping gnupg ca-certificates apt-transport-https && \
     rm -rf /var/lib/apt/lists/*
 
-# get powershell for 22.04
+# Install PowerShell
 RUN wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb && \
     dpkg -i packages-microsoft-prod.deb && \
     apt-get update && \
@@ -39,10 +38,9 @@ RUN wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsof
     apt-get install -y powershell=${Powershell_Version} &&\
     rm -rf /var/lib/apt/lists/*
 
-# Get Octopus/Octo CLI
+# Install Octopus/Octo CLI
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gnupg curl ca-certificates apt-transport-https && \
-    curl -fsSL https://apt.octopus.com/public.key | sudo gpg --dearmor -o /etc/apt/keyrings/octopus.gpg && \
+    curl -fsSL https://apt.octopus.com/public.key | gpg --dearmor -o /etc/apt/keyrings/octopus.gpg && \
     echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/octopus.gpg] https://apt.octopus.com/ stable main" | tee /etc/apt/sources.list.d/octopus.list > /dev/null && \
     apt-get update && \
     apt-get install -y octopus-cli=${Octopus_Cli_Version} && \
