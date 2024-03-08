@@ -43,7 +43,7 @@ RUN wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsof
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gnupg curl ca-certificates apt-transport-https && \
     curl -fsSL https://apt.octopus.com/public.key | sudo gpg --dearmor -o /etc/apt/keyrings/octopus.gpg && \
-    echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/octopus.gpg] https://apt.octopus.com/ stable main" | sudo tee /etc/apt/sources.list.d/octopus.list > /dev/null && \
+    echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/octopus.gpg] https://apt.octopus.com/ stable main" | tee /etc/apt/sources.list.d/octopus.list > /dev/null && \
     apt-get update && \
     apt-get install -y octopus-cli=${Octopus_Cli_Version} && \
     apt-get install -y octopuscli=${Octopus_Cli_Legacy_Version} &&\
