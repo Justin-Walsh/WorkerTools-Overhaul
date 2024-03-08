@@ -1,5 +1,5 @@
-FROM mcr.microsoft.com/dotnet/framework/runtime:4.8.1-20240213-windowsservercore-ltsc2022
-#SHELL ["powershell", "-Command"]
+FROM --platform=windows/amd64 mcr.microsoft.com/dotnet/framework/runtime:4.8.1-windowsservercore-ltsc2022
+SHELL ["powershell", "-Command"]
 
 ARG Aws_Cli_Version=2.15.26
 ARG Aws_Iam_Authenticator_Version=0.6.14
@@ -28,7 +28,7 @@ ARG Argo_Cli_Version=2.8.11
 RUN $ProgressPreference = 'SilentlyContinue'; `
     Set-ExecutionPolicy Bypass -Scope Process -Force; `
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
-    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
 # Install dotnet 8.0+
 RUN Invoke-WebRequest 'https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.ps1' -outFile 'dotnet-install.ps1'; `
