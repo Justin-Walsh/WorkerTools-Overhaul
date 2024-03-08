@@ -25,20 +25,20 @@ ARG Git_Version=2.44.0
 ARG Argo_Cli_Version=2.8.11
 
 # Install Choco
-RUN $ProgressPreference = 'SilentlyContinue'; `
-    Set-ExecutionPolicy Bypass -Scope Process -Force; `
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
+RUN $ProgressPreference = 'SilentlyContinue'; \
+    Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
 # Install dotnet 8.0+
-RUN Invoke-WebRequest 'https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.ps1' -outFile 'dotnet-install.ps1'; `
-    [Environment]::SetEnvironmentVariable('DOTNET_CLI_TELEMETRY_OPTOUT', '1', 'Machine'); `
-    .\dotnet-install.ps1 -Channel '8.0'; `
+RUN Invoke-WebRequest 'https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.ps1' -outFile 'dotnet-install.ps1'; \
+    [Environment]::SetEnvironmentVariable('DOTNET_CLI_TELEMETRY_OPTOUT', '1', 'Machine'); \
+    .\dotnet-install.ps1 -Channel '8.0'; \
     rm dotnet-install.ps1
 
 # Install JDK
-RUN choco install openjdk21 --allow-empty-checksums --yes --no-progress --version $Env:Java_Jdk_Version; `
-    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; `
+RUN choco install openjdk21 --allow-empty-checksums --yes --no-progress --version $Env:Java_Jdk_Version; \
+    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; \
     Update-SessionEnvironment
 
 # Install Azure CLI
@@ -52,19 +52,19 @@ RUN choco install aws-iam-authenticator -y --version $Env:Aws_Iam_Authenticator_
 
 # # Install AWS PowerShell modules
 # # https://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up-windows.html#ps-installing-awspowershellnetcore
-RUN Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force; `
+RUN Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force; \
     Install-Module -name AWSPowerShell.NetCore -RequiredVersion $Env:Aws_Powershell_Version -Force
 
 #Install Azure PowerShell modules
 # https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.6.1
-RUN Install-Module -Force -Name Az -AllowClobber -Scope AllUsers -MaximumVersion $Env:Azure_Powershell_Version; `
+RUN Install-Module -Force -Name Az -AllowClobber -Scope AllUsers -MaximumVersion $Env:Azure_Powershell_Version; \
     Enable-AzureRmAlias -Scope LocalMachine
 
 # # Install NodeJS
 RUN choco install nodejs-lts -y --version $Env:Node_Version --no-progress
 
 # # Install kubectl
-RUN Invoke-WebRequest "https://storage.googleapis.com/kubernetes-release/release/v${Env:Kubectl_Version}/bin/windows/amd64/kubectl.exe" -OutFile .\kubectl.exe; `
+RUN Invoke-WebRequest "https://storage.googleapis.com/kubernetes-release/release/v${Env:Kubectl_Version}/bin/windows/amd64/kubectl.exe" -OutFile .\kubectl.exe; \
     mv .\kubectl.exe C:\Windows\system32\;
 
 # Get Kubelogin
@@ -77,18 +77,18 @@ RUN choco install -y kubernetes-helm --version $Env:Helm_Version --no-progress
 RUN choco install -y terraform --version $Env:Terraform_Version --no-progress
 
 # # Install python
-RUN choco install -y python3 --version $Env:Python_Version --no-progress; `
-    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; `
+RUN choco install -y python3 --version $Env:Python_Version --no-progress; \
+    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; \
     Update-SessionEnvironment
 
 # # Install 7ZIP because gcloud
 RUN choco install 7zip -y --version $Env:7Zip_Version --no-progress
 
 # # Install gcloud
-RUN Invoke-WebRequest "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${Env:Google_Cloud_Cli_Version}-windows-x86_64.zip" -OutFile google-cloud-sdk-$Env:Google_Cloud_Cli_Version-windows-x86_64.zip; `
+RUN Invoke-WebRequest "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${Env:Google_Cloud_Cli_Version}-windows-x86_64.zip" -OutFile google-cloud-sdk-$Env:Google_Cloud_Cli_Version-windows-x86_64.zip; \
     # # UNZIP AND INSTALL gcloud
-    & '.\Program Files\7-Zip\7z.exe' x .\google-cloud-sdk-$Env:Google_Cloud_Cli_Version-windows-x86_64.zip; `
-    .\google-cloud-sdk\install.bat --quiet; `
+    & '.\Program Files\7-Zip\7z.exe' x .\google-cloud-sdk-$Env:Google_Cloud_Cli_Version-windows-x86_64.zip; \
+    .\google-cloud-sdk\install.bat --quiet; \
     rm .\google-cloud-sdk-$Env:Google_Cloud_Cli_Version-windows-x86_64.zip
 
 # # Install ScriptCS
@@ -120,5 +120,5 @@ ADD .\scripts\update_path.cmd C:\update_path.cmd
 RUN .\update_path.cmd;
 
 # gcloud requires python on path, update_path.cmd adds python to path. This created a .install\.backup folder that's required for rollbacks and takes ~1Gig. 
-RUN gcloud components install gke-gcloud-auth-plugin --quiet; `
+RUN gcloud components install gke-gcloud-auth-plugin --quiet; \
     Remove-Item -Path C:\google-cloud-sdk\.install\.backup -Force -Recurse
