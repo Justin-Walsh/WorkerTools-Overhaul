@@ -15,13 +15,13 @@ ARG Google_Cloud_Gke_Cloud_Auth_Plugin_Version=412.0.0-0
 ARG Helm_Version=v3.14.2
 ARG Java_Jdk_Version=21
 ARG Kubectl_Version=1.29
-ARG Kubelogin_Version=v0.0.30
+ARG Kubelogin_Version=v0.1.1
 ARG NodeJs_Version=20
 ARG Octopus_Cli_Version=1.7.1
 ARG Octopus_Cli_Legacy_Version=9.1.7
 ARG Octopus_Client_Version=11.6.3644
 ARG Powershell_Version=7.2.7-1.deb
-ARG Terraform_Version=1.1.3
+ARG Terraform_Version=1.7.4
 ARG Umoci_Version=0.4.6
 ARG Python2_Version=2.7.18-3
 ARG Argocd_Version=2.8.0
@@ -79,12 +79,7 @@ RUN DOTNET_CLI_TELEMETRY_OPTOUT=1 && \
 # https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-18-04
 # https://packages.ubuntu.com/bionic/openjdk-11-dbg
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-${Java_Jdk_Version}-jdk-headless && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install common Java tools (Maven and Gradle)
-RUN apt-get update && \
-    apt-get install -y maven gradle && \
+    apt-get install -y --no-install-recommends openjdk-${Java_Jdk_Version}-jdk-headless maven gradle && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Azure CLI
@@ -109,19 +104,22 @@ RUN curl -fsSL "https://pkgs.k8s.io/core:/stable:/v${Kubectl_Version}/deb/Releas
     apt-get install -y kubectl && \
     rm -rf /var/lib/apt/lists/*
 
-## Get Kubelogin
-#RUN wget --quiet https://github.com/Azure/kubelogin/releases/download/${Kubelogin_Version}/kubelogin-linux-amd64.zip && \
-#    unzip kubelogin-linux-amd64.zip -d kubelogin-linux-amd64 && \
-#    mv kubelogin-linux-amd64/bin/linux_amd64/kubelogin /usr/local/bin && \
-#    rm -rf kubelogin-linux-amd64 && \
-#    rm kubelogin-linux-amd64.zip
-#
-## Get Terraform
-## https://computingforgeeks.com/how-to-install-terraform-on-ubuntu-centos-7/
-#RUN wget https://releases.hashicorp.com/terraform/${Terraform_Version}/terraform_${Terraform_Version}_linux_amd64.zip && \
-#    unzip terraform_${Terraform_Version}_linux_amd64.zip && \
-#    mv terraform /usr/local/bin
-#
+# Install Kubelogin
+RUN wget --quiet https://github.com/Azure/kubelogin/releases/download/${Kubelogin_Version}/kubelogin-linux-amd64.zip && \
+    unzip kubelogin-linux-amd64.zip -d kubelogin-linux-amd64 && \
+    mv kubelogin-linux-amd64/bin/linux_amd64/kubelogin /usr/local/bin && \
+    rm -rf kubelogin-linux-amd64 && \
+    rm kubelogin-linux-amd64.zip
+
+# Install Terraform
+# https://computingforgeeks.com/how-to-install-terraform-on-ubuntu-centos-7/
+RUN wget --quiet https://releases.hashicorp.com/terraform/${Terraform_Version}/terraform_${Terraform_Version}_linux_amd64.zip && \
+    unzip terraform_${Terraform_Version}_linux_amd64.zip && \
+    mv terraform /usr/local/bin && \
+    rm -rf terraform && \
+    rm terraform_${Terraform_Version}_linux_amd64.zip
+
+
 ## Install Google Cloud CLI
 ## https://cloud.google.com/sdk/docs/downloads-apt-get
 #RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
