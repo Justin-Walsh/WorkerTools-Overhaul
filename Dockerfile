@@ -13,7 +13,7 @@ ARG Eks_Cli_Version=v0.173.0
 ARG Google_Cloud_Cli_Version=467.0.0-0
 ARG Google_Cloud_Gke_Cloud_Auth_Plugin_Version=412.0.0-0
 ARG Helm_Version=v3.14.2
-ARG Java_Jdk_Version=11.0.22+7-0ubuntu2~22.04.1
+ARG Java_Jdk_Version=21
 ARG Kubectl_Version=1.29
 ARG Kubelogin_Version=v0.0.30
 ARG Octopus_Cli_Version=1.7.1
@@ -78,7 +78,7 @@ RUN DOTNET_CLI_TELEMETRY_OPTOUT=1 && \
 # Get JDK
 # https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-18-04
 # https://packages.ubuntu.com/bionic/openjdk-11-dbg
-RUN apt-get install -y openjdk-11-jdk-headless=${Java_Jdk_Version}
+RUN apt-get install -y openjdk-11${Java_Jdk_Version}-jdk-headless
 
 ## Install common Java tools
 #RUN apt-get update && \
