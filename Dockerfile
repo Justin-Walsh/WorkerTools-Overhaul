@@ -28,7 +28,7 @@ ARG Argocd_Version=2.8.0
 # get `wget` & software-properties-common
 # https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7#ubuntu-1804
 RUN apt-get update && \
-    apt-get install -no-install-recommends -y wget unzip apt-utils curl software-properties-common iputils-ping && \
+    apt-get install -y wget unzip apt-utils curl software-properties-common iputils-ping && \
     rm -rf /var/lib/apt/lists/*
 
 # get powershell for 22.04
