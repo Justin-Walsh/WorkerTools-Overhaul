@@ -75,25 +75,30 @@ RUN DOTNET_CLI_TELEMETRY_OPTOUT=1 && \
     apt-get install -y dotnet-sdk-${Dotnet_Sdk_Version} &&\
     rm -rf /var/lib/apt/lists/*
 
-# Install JDK
+# Install JDK / Tools
 # https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-18-04
 # https://packages.ubuntu.com/bionic/openjdk-11-dbg
-RUN apt-get install -y openjdk-${Java_Jdk_Version}-jdk-headless
-
-# Install common Java tools
 RUN apt-get update && \
-    apt-get install -y maven gradle
+    apt-get install -y --no-install-recommends openjdk-${Java_Jdk_Version}-jdk-headless && \
+    rm -rf /var/lib/apt/lists/*
 
-## Get Azure CLI
-## https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt#option-2-step-by-step-installation-instructions
-#RUN mkdir -p /etc/apt/keyrings && \
-#    curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null && \
-#    chmod go+r /etc/apt/keyrings/microsoft.gpg && \
-#    echo "deb [arch=`dpkg --print-architecture` signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ jammy main" | tee /etc/apt/sources.list.d/azure-cli.list && \
-#    apt-get update && \
-#    apt-get install -y azure-cli=${Azure_Cli_Version}
-#
-## Get NodeJS
+# Install common Java tools (Maven and Gradle)
+RUN apt-get update && \
+    apt-get install -y maven gradle &&\
+    rm -rf /var/lib/apt/lists/*
+
+# Get Azure CLI
+# https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt#option-2-step-by-step-installation-instructions
+RUN mkdir -p /etc/apt/keyrings && \
+    curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null && \
+    chmod go+r /etc/apt/keyrings/microsoft.gpg && \
+    echo "deb [arch=`dpkg --print-architecture` signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ jammy main" | tee /etc/apt/sources.list.d/azure-cli.list && \
+    apt-get update && \
+    apt-get install -y azure-cli=${Azure_Cli_Version} &&\
+    rm -rf /var/lib/apt/lists/*
+
+
+# Get NodeJS
 ## https://websiteforstudents.com/how-to-install-node-js-10-11-12-on-ubuntu-16-04-18-04-via-apt-and-snap/\
 #RUN wget --quiet -O - https://deb.nodesource.com/setup_14.x | bash && \
 #    apt-get install -y nodejs
