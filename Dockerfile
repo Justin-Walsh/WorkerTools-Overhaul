@@ -2,6 +2,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG Argocd_Version=2.8.0
 ARG Aws_Cli_Version=2.15.26
 ARG Aws_Iam_Authenticator_Version=0.6.14
 ARG Aws_Powershell_Version=4.1.532
@@ -11,7 +12,7 @@ ARG Dotnet_Sdk_Version=8.0
 ARG Ecs_Cli_Version=1.21.0
 ARG Eks_Cli_Version=v0.173.0
 ARG Google_Cloud_Cli_Version=467.0.0-0
-ARG Google_Cloud_Gke_Cloud_Auth_Plugin_Version=412.0.0-0
+ARG Google_Cloud_Gke_Cloud_Auth_Plugin_Version=467.0.0-0
 ARG Helm_Version=v3.14.2
 ARG Java_Jdk_Version=21
 ARG Kubectl_Version=1.29
@@ -21,10 +22,11 @@ ARG Octopus_Cli_Version=1.7.1
 ARG Octopus_Cli_Legacy_Version=9.1.7
 ARG Octopus_Client_Version=11.6.3644
 ARG Powershell_Version=7.2.7-1.deb
+ARG Python2_Version=2.7.18-3
 ARG Terraform_Version=1.7.4
 ARG Umoci_Version=0.4.6
-ARG Python2_Version=2.7.18-3
-ARG Argocd_Version=2.8.0
+
+
 
 # Install common tools
 RUN apt-get update && \
@@ -116,34 +118,35 @@ RUN wget --quiet https://github.com/Azure/kubelogin/releases/download/${Kubelogi
 RUN wget --quiet https://releases.hashicorp.com/terraform/${Terraform_Version}/terraform_${Terraform_Version}_linux_amd64.zip && \
     unzip terraform_${Terraform_Version}_linux_amd64.zip && \
     mv terraform /usr/local/bin && \
-    rm -rf terraform && \
     rm terraform_${Terraform_Version}_linux_amd64.zip
 
 
-## Install Google Cloud CLI
-## https://cloud.google.com/sdk/docs/downloads-apt-get
-#RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-#    apt-get install -y ca-certificates gnupg && \
-#    wget -q -O - https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
-#    apt-get update && apt-get install -y google-cloud-sdk=${Google_Cloud_Cli_Version} && \
-#    apt-get install google-cloud-sdk-gke-gcloud-auth-plugin=${Google_Cloud_Gke_Cloud_Auth_Plugin_Version}
-#
-## Get python3 & groff
-#RUN apt-get install -y python3-pip groff && \
-#    python3 -m pip install pycryptodome --user
-#
-## Install python2
-#RUN apt-get install -y python2-minimal=${Python2_Version} && \
-#    ln -s /usr/bin/python2 /usr/bin/python
-#
-## Get AWS CLI
-## https://docs.aws.amazon.com/cli/latest/userguide/install-linux.html#install-linux-awscli
-#RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${Aws_Cli_Version}.zip" -o "awscliv2.zip" && \
-#    unzip awscliv2.zip && \
-#    ./aws/install && \
-#    rm awscliv2.zip && \
-#    rm -rf ./aws
-#
+# Install Google Cloud CLI
+# https://cloud.google.com/sdk/docs/downloads-apt-get
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    apt-get update && apt-get install -y google-cloud-sdk=${Google_Cloud_Cli_Version} google-cloud-sdk-gke-gcloud-auth-plugin=${Google_Cloud_Gke_Cloud_Auth_Plugin_Version} && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install pip & groff
+RUN apt-get update && \
+    apt-get install -y python3-pip groff && \
+    python3 -m pip install pycryptodome --user && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install python2
+RUN apt-get update && \
+    apt-get install -y python2-minimal=${Python2_Version} && \
+    ln -s /usr/bin/python2 /usr/bin/python
+
+# Get AWS CLI
+# https://docs.aws.amazon.com/cli/latest/userguide/install-linux.html#install-linux-awscli
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${Aws_Cli_Version}.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm awscliv2.zip && \
+    rm -rf ./aws
+
 ## Get EKS CLI
 ## https://github.com/weaveworks/eksctl
 #RUN curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/${Eks_Cli_Version}/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && \
