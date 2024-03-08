@@ -64,23 +64,22 @@ RUN pwsh -c 'Install-Module -Force -Name Az -AllowClobber -Scope AllUsers -Maxim
 # Install Helm3
 RUN wget --quiet -O - https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash -s -- -v ${Helm_Version}
 
-## Get .NET SDK
-## https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
-## https://learn.microsoft.com/en-us/dotnet/core/install/linux-package-mixup
-#RUN DOTNET_CLI_TELEMETRY_OPTOUT=1 && \
-#    touch /etc/apt/preferences && \
-#    echo "Package: dotnet* aspnet* netstandard* \nPin: origin \"packages.microsoft.com\" \nPin-Priority: -10" > /etc/apt/preferences && \
-#    echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" > /etc/profile.d/set-dotnet-env-vars.sh && \
-#    apt-get install -y apt-transport-https && \
-#    apt-get update && \
-#    apt-get install -y dotnet-sdk-${Dotnet_Sdk_Version} &&\
-#    rm -rf /var/lib/apt/lists/*
-#
-## Get JDK
-## https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-18-04
-## https://packages.ubuntu.com/bionic/openjdk-11-dbg
-#RUN apt-get install -y openjdk-11-jdk-headless=${Java_Jdk_Version}
-#
+# Get .NET SDK
+# https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
+# https://learn.microsoft.com/en-us/dotnet/core/install/linux-package-mixup
+RUN DOTNET_CLI_TELEMETRY_OPTOUT=1 && \
+    touch /etc/apt/preferences && \
+    echo "Package: dotnet* aspnet* netstandard* \nPin: origin \"packages.microsoft.com\" \nPin-Priority: -10" > /etc/apt/preferences && \
+    echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" > /etc/profile.d/set-dotnet-env-vars.sh && \
+    apt-get update && \
+    apt-get install -y dotnet-sdk-${Dotnet_Sdk_Version} &&\
+    rm -rf /var/lib/apt/lists/*
+
+# Get JDK
+# https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-18-04
+# https://packages.ubuntu.com/bionic/openjdk-11-dbg
+RUN apt-get install -y openjdk-11-jdk-headless=${Java_Jdk_Version}
+
 ## Install common Java tools
 #RUN apt-get update && \
 #    apt-get install -y maven gradle
