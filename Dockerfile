@@ -46,17 +46,17 @@ RUN apt-get update && \
     apt-get install -y octopus-cli=${Octopus_Cli_Version} && \
     apt-get install -y octopuscli=${Octopus_Cli_Legacy_Version} &&\
     rm -rf /var/lib/apt/lists/*
-#
-## Install Octopus Client
-## https://octopus.com/docs/octopus-rest-api/octopus.client
-#RUN pwsh -c 'Install-Package -Force Octopus.Client -MaximumVersion "'${Octopus_Client_Version}'" -source https://www.nuget.org/api/v2 -SkipDependencies' && \
-#    octopusClientPackagePath=$(pwsh -c '(Get-Item ((Get-Package Octopus.Client).source)).Directory.FullName') && \
-#    cp -r $octopusClientPackagePath/lib/netstandard2.0/* . 
-#
-## Get AWS Powershell core modules
-## https://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up-linux-mac.html
-#RUN pwsh -c 'Install-Module -Force -Name AWSPowerShell.NetCore -AllowClobber -Scope AllUsers -MaximumVersion "'${Aws_Powershell_Version}'"'
-#
+
+# Install Octopus Client
+# https://octopus.com/docs/octopus-rest-api/octopus.client
+RUN pwsh -c 'Install-Package -Force Octopus.Client -MaximumVersion "'${Octopus_Client_Version}'" -source https://www.nuget.org/api/v2 -SkipDependencies' && \
+    octopusClientPackagePath=$(pwsh -c '(Get-Item ((Get-Package Octopus.Client).source)).Directory.FullName') && \
+    cp -r $octopusClientPackagePath/lib/netstandard2.0/* . 
+
+# Install AWS Powershell core modules
+# https://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up-linux-mac.html
+RUN pwsh -c 'Install-Module -Force -Name AWSPowerShell.NetCore -AllowClobber -Scope AllUsers -MaximumVersion "'${Aws_Powershell_Version}'"'
+
 ## Get AZ Powershell core modules
 ## https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.6.1
 #RUN pwsh -c 'Install-Module -Force -Name Az -AllowClobber -Scope AllUsers -MaximumVersion "'${Azure_Powershell_Version}'"'
