@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG Aws_Cli_Version=2.15.26
 ARG Aws_Iam_Authenticator_Version=0.6.14
 ARG Aws_Powershell_Version=4.1.532
-ARG Azure_Cli_Version=2.91.0-1~jammy
+ARG Azure_Cli_Version=2.58.0-1~jammy
 ARG Azure_Powershell_Version=11.3.0
 ARG Dotnet_Sdk_Version=8.0
 ARG Ecs_Cli_Version=1.21.0
@@ -16,6 +16,7 @@ ARG Helm_Version=v3.14.2
 ARG Java_Jdk_Version=21
 ARG Kubectl_Version=1.29
 ARG Kubelogin_Version=v0.0.30
+ARG NodeJs_Version=20
 ARG Octopus_Cli_Version=1.7.1
 ARG Octopus_Cli_Legacy_Version=9.1.7
 ARG Octopus_Client_Version=11.6.3644
@@ -43,8 +44,7 @@ RUN apt-get update && \
     curl -fsSL https://apt.octopus.com/public.key | gpg --dearmor -o /etc/apt/keyrings/octopus.gpg && \
     echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/octopus.gpg] https://apt.octopus.com/ stable main" | tee /etc/apt/sources.list.d/octopus.list > /dev/null && \
     apt-get update && \
-    apt-get install -y octopus-cli=${Octopus_Cli_Version} && \
-    apt-get install -y octopuscli=${Octopus_Cli_Legacy_Version} &&\
+    apt-get install -y octopus-cli=${Octopus_Cli_Version} octopuscli=${Octopus_Cli_Legacy_Version} && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Octopus Client
@@ -72,7 +72,7 @@ RUN DOTNET_CLI_TELEMETRY_OPTOUT=1 && \
     echo "Package: dotnet* aspnet* netstandard* \nPin: origin \"packages.microsoft.com\" \nPin-Priority: -10" > /etc/apt/preferences && \
     echo "export DOTNET_CLI_TELEMETRY_OPTOUT=1" > /etc/profile.d/set-dotnet-env-vars.sh && \
     apt-get update && \
-    apt-get install -y dotnet-sdk-${Dotnet_Sdk_Version} &&\
+    apt-get install -y dotnet-sdk-${Dotnet_Sdk_Version} && \
     rm -rf /var/lib/apt/lists/*
 
 # Install JDK / Tools
@@ -84,31 +84,31 @@ RUN apt-get update && \
 
 # Install common Java tools (Maven and Gradle)
 RUN apt-get update && \
-    apt-get install -y maven gradle &&\
+    apt-get install -y maven gradle && \
     rm -rf /var/lib/apt/lists/*
 
-# Get Azure CLI
+# Install Azure CLI
 # https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt#option-2-step-by-step-installation-instructions
-RUN mkdir -p /etc/apt/keyrings && \
-    curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null && \
-    chmod go+r /etc/apt/keyrings/microsoft.gpg && \
+RUN curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null && \
     echo "deb [arch=`dpkg --print-architecture` signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ jammy main" | tee /etc/apt/sources.list.d/azure-cli.list && \
     apt-get update && \
-    apt-get install -y azure-cli=${Azure_Cli_Version} &&\
+    apt-get install -y azure-cli=Azure_Cli_Version} && \
     rm -rf /var/lib/apt/lists/*
 
 
-# Get NodeJS
-## https://websiteforstudents.com/how-to-install-node-js-10-11-12-on-ubuntu-16-04-18-04-via-apt-and-snap/\
-#RUN wget --quiet -O - https://deb.nodesource.com/setup_14.x | bash && \
-#    apt-get install -y nodejs
-#
-## Get kubectl
-## https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
-#RUN curl -fsSL "https://pkgs.k8s.io/core:/stable:/v${Kubectl_Version}/deb/Release.key" | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg && \
-#    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${Kubectl_Version}/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list && \
-#    apt-get update && apt-get install -y kubectl
-#
+# Install NodeJS
+RUN wget --quiet -O - https://deb.nodesource.com/setup_${NodeJs_Version}.x | bash && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install kubectl
+# https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
+RUN curl -fsSL "https://pkgs.k8s.io/core:/stable:/v${Kubectl_Version}/deb/Release.key" | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${Kubectl_Version}/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list && \
+    apt-get update && \ 
+    apt-get install -y kubectl && \
+    rm -rf /var/lib/apt/lists/*
+
 ## Get Kubelogin
 #RUN wget --quiet https://github.com/Azure/kubelogin/releases/download/${Kubelogin_Version}/kubelogin-linux-amd64.zip && \
 #    unzip kubelogin-linux-amd64.zip -d kubelogin-linux-amd64 && \
