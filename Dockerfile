@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ARG Argocd_Version=2.8.0
+ARG Argocd_Version=2.8.11
 ARG Aws_Cli_Version=2.15.26
 ARG Aws_Iam_Authenticator_Version=0.6.14
 ARG Aws_Powershell_Version=4.1.532
@@ -18,13 +18,13 @@ ARG Java_Jdk_Version=21
 ARG Kubectl_Version=1.29
 ARG Kubelogin_Version=v0.1.1
 ARG NodeJs_Version=20
-ARG Octopus_Cli_Version=1.7.1
+ARG Octopus_Cli_Version=2.2.1
 ARG Octopus_Cli_Legacy_Version=9.1.7
 ARG Octopus_Client_Version=11.6.3644
-ARG Powershell_Version=7.2.7-1.deb
+ARG Powershell_Version=7.4.1-1.deb
 ARG Python2_Version=2.7.18-3
 ARG Terraform_Version=1.7.4
-ARG Umoci_Version=0.4.6
+ARG Umoci_Version=0.4.7
 
 
 
@@ -139,7 +139,7 @@ RUN apt-get update && \
     apt-get install -y python2-minimal=${Python2_Version} && \
     ln -s /usr/bin/python2 /usr/bin/python
 
-# Get AWS CLI
+# Install AWS CLI
 # https://docs.aws.amazon.com/cli/latest/userguide/install-linux.html#install-linux-awscli
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${Aws_Cli_Version}.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
@@ -147,51 +147,54 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${Aws_Cli_Version
     rm awscliv2.zip && \
     rm -rf ./aws
 
-## Get EKS CLI
-## https://github.com/weaveworks/eksctl
-#RUN curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/${Eks_Cli_Version}/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && \
-#    mv /tmp/eksctl /usr/local/bin
-#
-## Get ECS CLI
+# Install EKS CLI
+# https://github.com/weaveworks/eksctl
+RUN curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/${Eks_Cli_Version}/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && \
+    mv /tmp/eksctl /usr/local/bin
+
+# Install ECS CLI
 ## https://github.com/aws/amazon-ecs-cli
-#RUN curl --silent --location "https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-v${Ecs_Cli_Version}" -o /usr/local/bin/ecs-cli && \
-#    chmod +x /usr/local/bin/ecs-cli
-#
-## Get AWS IAM Authenticator
-## https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html
-#RUN curl --silent --location https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v${Aws_Iam_Authenticator_Version}/aws-iam-authenticator_${Aws_Iam_Authenticator_Version}_linux_amd64 -o /usr/local/bin/aws-iam-authenticator && \
-#    chmod +x /usr/local/bin/aws-iam-authenticator
-#
-## Get the Istio CLI
+RUN curl --silent --location "https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-v${Ecs_Cli_Version}" -o /usr/local/bin/ecs-cli && \
+    chmod +x /usr/local/bin/ecs-cli
+
+# Install AWS IAM Authenticator
+# https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html
+RUN curl --silent --location https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v${Aws_Iam_Authenticator_Version}/aws-iam-authenticator_${Aws_Iam_Authenticator_Version}_linux_amd64 -o /usr/local/bin/aws-iam-authenticator && \
+    chmod +x /usr/local/bin/aws-iam-authenticator
+
+## Install Istio CLI
 ## https://istio.io/docs/ops/diagnostic-tools/istioctl/
-#RUN curl -sL https://istio.io/downloadIstioctl | sh - && \
-#    mv /root/.istioctl/bin/istioctl /usr/local/bin/istioctl && \
-#    rm -rf /root/.istioctl
-#
-## Get the Linkerd CLI
-## https://linkerd.io/2/getting-started/
-#RUN curl -sL https://run.linkerd.io/install | sh && \
-#    cp /root/.linkerd2/bin/linkerd /usr/local/bin && \
-#    rm -rf /root/.linkerd2
-#
-## Get tools for working with Docker images without the Docker daemon
-## https://github.com/openSUSE/umoci
-#RUN curl --silent --location https://github.com/opencontainers/umoci/releases/download/v${Umoci_Version}/umoci.amd64 -o /usr/local/bin/umoci && \
-#    chmod +x /usr/local/bin/umoci
-#
-## Get common utilities for scripting
-## https://mikefarah.gitbook.io/yq/
-## https://augeas.net/
-#RUN add-apt-repository -y ppa:rmescandon/yq && \
-#    apt-get update && apt-get install -y jq yq openssh-client rsync git augeas-tools
-#
-## Skopeo
-## https://github.com/containers/skopeo/blob/master/install.md
-#RUN sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_22.04/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list" && \
-#    wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_22.04/Release.key -O- | apt-key add - && \
-#    apt-get update && apt-get install -y skopeo
-#
-#RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/v${Argocd_Version}/argocd-linux-amd64 && \
-#  install -m 555 argocd-linux-amd64 /usr/local/bin/argocd && \
-#  rm argocd-linux-amd64
-#
+RUN curl -sL https://istio.io/downloadIstioctl | sh - && \
+    mv /root/.istioctl/bin/istioctl /usr/local/bin/istioctl && \
+    rm -rf /root/.istioctl
+
+# Install Linkerd CLI
+# https://linkerd.io/2/getting-started/
+RUN curl -sL https://run.linkerd.io/install | sh && \
+    cp /root/.linkerd2/bin/linkerd /usr/local/bin && \
+    rm -rf /root/.linkerd2
+
+# Install umoci
+# https://github.com/openSUSE/umoci
+RUN curl --silent --location https://github.com/opencontainers/umoci/releases/download/v${Umoci_Version}/umoci.amd64 -o /usr/local/bin/umoci && \
+    chmod +x /usr/local/bin/umoci
+
+
+
+# Install Skopeo
+RUN apt-get update && \
+    apt-get install -y skopeo && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Argo CD
+RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/v${Argocd_Version}/argocd-linux-amd64 && \
+  install -m 555 argocd-linux-amd64 /usr/local/bin/argocd && \
+  rm argocd-linux-amd64
+
+
+# Get common utilities for scripting
+# https://mikefarah.gitbook.io/yq/
+# https://augeas.net/
+RUN add-apt-repository -y ppa:rmescandon/yq && \
+    apt-get update && apt-get install -y jq yq openssh-client rsync git augeas-tools && \
+    rm -rf /var/lib/apt/lists/*
