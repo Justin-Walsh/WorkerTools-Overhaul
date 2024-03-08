@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/framework/runtime:4.8.1-20240213-windowsservercore-ltsc2022
-SHELL ["powershell", "-Command"]
+#SHELL ["powershell", "-Command"]
 
 ARG Aws_Cli_Version=2.15.26
 ARG Aws_Iam_Authenticator_Version=0.6.14
