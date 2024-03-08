@@ -1,4 +1,4 @@
-FROM --platform=windows/amd64 mcr.microsoft.com/dotnet/framework/runtime:4.8.1-windowsservercore-ltsc2022
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8.1-20230808-windowsservercore-ltsc2022
 SHELL ["powershell", "-Command"]
 
 ARG Aws_Cli_Version=2.15.26
