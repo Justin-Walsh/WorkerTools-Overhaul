@@ -41,20 +41,16 @@ RUN Invoke-WebRequest 'https://dotnet.microsoft.com/download/dotnet/scripts/v1/d
 # Install JDK
 RUN choco install openjdk --allow-empty-checksums --y --no-progress --version $Env:Java_Jdk_Version; `
     Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; `
-    Update-SessionEnvironment; `
-    choco optimize
+    Update-SessionEnvironment
 
 # Install Azure CLI
-RUN choco install azure-cli -y --version $Env:Azure_Cli_Version --no-progress; `
-    choco optimize
+RUN choco install azure-cli -y --version $Env:Azure_Cli_Version --no-progress
 
 # Install the AWS CLI
-RUN choco install awscli -y --version $Env:Aws_Cli_Version --no-progress; `
-    choco optimize
+RUN choco install awscli -y --version $Env:Aws_Cli_Version --no-progress
 
 # Install the AWS IAM Authenticator 
-RUN choco install aws-iam-authenticator -y --version $Env:Aws_Iam_Authenticator_Version --no-progress; `
-choco optimize
+RUN choco install aws-iam-authenticator -y --version $Env:Aws_Iam_Authenticator_Version --no-progress
 
 # Install AWS PowerShell modules
 # https://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up-windows.html#ps-installing-awspowershellnetcore
@@ -67,34 +63,28 @@ RUN Install-Module -Force -Name Az -AllowClobber -Scope AllUsers -MaximumVersion
     Enable-AzureRmAlias -Scope LocalMachine
 
 # Install NodeJS
-RUN choco install nodejs-lts -y --version $Env:Node_Version --no-progress; `
-    choco optimize
+RUN choco install nodejs-lts -y --version $Env:Node_Version --no-progress
 
 # Install kubectl
 RUN Invoke-WebRequest "https://storage.googleapis.com/kubernetes-release/release/v${Env:Kubectl_Version}/bin/windows/amd64/kubectl.exe" -OutFile .\kubectl.exe; `
     mv .\kubectl.exe C:\Windows\system32\;
 
 # Install Kubelogin
-RUN choco install azure-kubelogin --version $Env:Kubelogin_Version --no-progress -y; `
-    choco optimize
+RUN choco install azure-kubelogin --version $Env:Kubelogin_Version --no-progress -y
 
 # Install helm 3
-RUN choco install -y kubernetes-helm --version $Env:Helm_Version --no-progress; `
-    choco optimize
+RUN choco install -y kubernetes-helm --version $Env:Helm_Version --no-progress
 
 # Install Terraform
-RUN choco install -y terraform --version $Env:Terraform_Version --no-progress; `
-    choco optimize
+RUN choco install -y terraform --version $Env:Terraform_Version --no-progress
 
 # Install python
 RUN choco install -y python3 --version $Env:Python_Version --no-progress; `
     Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1; `
-    Update-SessionEnvironment; `
-    choco optimize
+    Update-SessionEnvironment
 
 # Install 7ZIP because gcloud
-RUN choco install 7zip -y --version $Env:7Zip_Version --no-progress; `
-    choco optimize
+RUN choco install 7zip -y --version $Env:7Zip_Version --no-progress
 
 # Install gcloud
 RUN Invoke-WebRequest "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${Env:Google_Cloud_Cli_Version}-windows-x86_64.zip" -OutFile google-cloud-sdk-$Env:Google_Cloud_Cli_Version-windows-x86_64.zip; `
@@ -104,35 +94,28 @@ RUN Invoke-WebRequest "https://dl.google.com/dl/cloudsdk/channels/rapid/download
     rm .\google-cloud-sdk-$Env:Google_Cloud_Cli_Version-windows-x86_64.zip
 
 # Install ScriptCS
-RUN choco install scriptcs -y --version $Env:ScriptCs_Version --no-progress; `
-    choco optimize
+RUN choco install scriptcs -y --version $Env:ScriptCs_Version --no-progress
 
 # Install Octopus CLI
-RUN choco install octopus-cli -y --version $Env:Octopus_Cli_Version --no-progress; `
-    choco optimize
+RUN choco install octopus-cli -y --version $Env:Octopus_Cli_Version --no-progress
 
 # Install octo
-RUN choco install octopustools -y --version $Env:Octopus_Cli_Legacy_Version --no-progress; `
-    choco optimize
+RUN choco install octopustools -y --version $Env:Octopus_Cli_Legacy_Version --no-progress
 
 # Install Octopus Client
 RUN Install-Package Octopus.Client -source https://www.nuget.org/api/v2 -SkipDependencies -Force -RequiredVersion $Env:Octopus_Client_Version
     
 # Install eksctl
-RUN choco install eksctl -y --version $Env:Eks_Cli_Version --no-progress; `
-    choco optimize
+RUN choco install eksctl -y --version $Env:Eks_Cli_Version --no-progress
 
 # Install Powershell Core
-RUN choco install powershell-core --yes --version $Env:Powershell_Version --no-progress; `
-    choco optimize
+RUN choco install powershell-core --yes --version $Env:Powershell_Version --no-progress
 
 # Install Git
-RUN choco install git.install --yes --version $Env:Git_Version --no-progress; `
-    choco optimize
+RUN choco install git.install --yes --version $Env:Git_Version --no-progress
 
 # Install Argo CD
-RUN choco install argocd-cli --yes --version $Env:Argo_Cli_Version --no-progress; `
-    choco optimize
+RUN choco install argocd-cli --yes --version $Env:Argo_Cli_Version --no-progress
 
 # Update path for new tools
 ADD .\scripts\update_path.cmd C:\update_path.cmd
