@@ -24,7 +24,7 @@ ARG ScriptCs_Version=0.17.1
 ARG Terraform_Version=1.7.4
 ARG 7Zip_Version=23.1.0
 ARG Git_Version=2.44.0
-ARG Argo_Cli_Version=2.8.11
+ARG Argo_Cli_Version=2.10.2
 
 # Install Choco
 RUN $ProgressPreference = 'SilentlyContinue'; `
